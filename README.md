@@ -122,5 +122,3 @@ Use one of these strings for the `animationType` prop:
 *   **Performance:** While GSAP is highly performant, animating a very large number of individual letters (`letters...` types) on complex pages might impact performance. Test accordingly. The `words...` types are generally less intensive.
 *   **Scrub Effect:** The `scrubEachWord` animation behaves differently. It directly ties the animation state to the scrollbar position between its `start` and `end` triggers, allowing the user to "scrub" through the animation. It doesn't use the `onEnter`/`onLeaveBack` play/reset logic like the other types.
 ```
-
-This README provides a good starting point for anyone wanting to use your `TextAnimateOnScroll` component. You can add more details or examples as needed.
