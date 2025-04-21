@@ -121,4 +121,3 @@ Use one of these strings for the `animationType` prop:
 *   **`overflow-hidden`:** The component automatically applies `overflow-hidden` to its container tag to properly contain animations that move elements outside their original bounds (like slide up/down).
 *   **Performance:** While GSAP is highly performant, animating a very large number of individual letters (`letters...` types) on complex pages might impact performance. Test accordingly. The `words...` types are generally less intensive.
 *   **Scrub Effect:** The `scrubEachWord` animation behaves differently. It directly ties the animation state to the scrollbar position between its `start` and `end` triggers, allowing the user to "scrub" through the animation. It doesn't use the `onEnter`/`onLeaveBack` play/reset logic like the other types.
-```
