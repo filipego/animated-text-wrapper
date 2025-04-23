@@ -120,8 +120,66 @@ export default function HomePage() {
         </TextAnimateOnScroll>
       </section>
 
+      {/* Section 9: Line Slide Up */}
+      <section className="w-full max-w-4xl min-h-[70vh] flex flex-col justify-center items-start py-16 border-b border-gray-300 dark:border-gray-700">
+        <p className="mb-4 px-3 py-1 text-sm border border-gray-400 dark:border-gray-600 rounded-full inline-block font-mono">
+          Line Slide Up
+        </p>
+        <TextAnimateOnScroll
+          tag="h1"
+          animationType="lineSlideUp"
+          className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
+        >
+          {longText}
+        </TextAnimateOnScroll>
+      </section>
+
+      {/* Section 10: Line Slide Up Stagger */}
+      <section className="w-full max-w-4xl min-h-[70vh] flex flex-col justify-center items-start py-16 border-b border-gray-300 dark:border-gray-700">
+        <p className="mb-4 px-3 py-1 text-sm border border-gray-400 dark:border-gray-600 rounded-full inline-block font-mono">
+          Line Slide Up Stagger
+        </p>
+        <TextAnimateOnScroll
+          tag="h1"
+          animationType="lineSlideUpStagger"
+          className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
+        >
+          {longText}
+        </TextAnimateOnScroll>
+      </section>
+
+      {/* Section 11 Line Slide Down */}
+      <section className="w-full max-w-4xl min-h-[70vh] flex flex-col justify-center items-start py-16 border-b border-gray-300 dark:border-gray-700">
+        <p className="mb-4 px-3 py-1 text-sm border border-gray-400 dark:border-gray-600 rounded-full inline-block font-mono">
+          Line Slide Down
+        </p>
+        <TextAnimateOnScroll
+          tag="h1"
+          animationType="lineSlideDown"
+          className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
+        >
+          {longText}
+        </TextAnimateOnScroll>
+      </section>
+
+      {/* Section 12 Line Slide Down Stagger */}
+      <section className="w-full max-w-4xl min-h-[70vh] flex flex-col justify-center items-start py-16 border-b border-gray-300 dark:border-gray-700">
+        <p className="mb-4 px-3 py-1 text-sm border border-gray-400 dark:border-gray-600 rounded-full inline-block font-mono">
+          Line Slide Down Stagger
+        </p>
+        <TextAnimateOnScroll
+          tag="h1"
+          animationType="lineSlideDownStagger"
+          className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
+        >
+          {longText}
+        </TextAnimateOnScroll>
+      </section>
+
       {/* Add some extra space at the bottom */}
       <div className="h-screen"></div>
+
+      {/* Section 9: Line Slide Up */}
     </main>
   );
 }

@@ -18,7 +18,11 @@ export type AnimationType =
   | "lettersSlideDown"
   | "lettersFadeIn"
   | "lettersFadeInRandom"
-  | "scrubEachWord";
+  | "scrubEachWord"
+  | "lineSlideUp"
+  | "lineSlideUpStagger"
+  | "lineSlideDown"
+  | "lineSlideDownStagger"; // <-- Add these
 
 // Define the component props
 interface TextAnimateOnScrollProps {
@@ -51,7 +55,16 @@ const TextAnimateOnScroll: React.FC<TextAnimateOnScrollProps> = ({
     const ctx = gsap.context(() => {
       // --- Correctly determine split types ---
       const needsChars = animationType.startsWith("letters");
-      const splitTypes = needsChars ? "words, chars" : "words";
+      const needsLines =
+        animationType === "lineSlideUp" ||
+        animationType === "lineSlideUpStagger" ||
+        animationType === "lineSlideDown" ||
+        animationType === "lineSlideDownStagger"; // <-- Add these
+      const splitTypes = needsLines
+        ? "lines"
+        : needsChars
+        ? "words, chars"
+        : "words";
 
       const splitInstance = new SplitType(textRef.current!, {
         types: splitTypes as any,
@@ -61,15 +74,22 @@ const TextAnimateOnScroll: React.FC<TextAnimateOnScrollProps> = ({
       let tl: gsap.core.Timeline | null = null;
       const triggerElement = textRef.current!;
 
-      // --- Select targets based on whether we need chars or words ---
-      const targets = needsChars ? splitInstance.chars : splitInstance.words;
+      // --- Select targets based on whether we need chars, words, or lines ---
+      let targets;
+      if (needsLines) {
+        targets = splitInstance.lines;
+      } else if (needsChars) {
+        targets = splitInstance.chars;
+      } else {
+        targets = splitInstance.words;
+      }
 
       if (!targets || targets.length === 0) {
         console.warn(
           `SplitType found no targets ('${
-            needsChars ? "chars" : "words"
+            needsLines ? "lines" : needsChars ? "chars" : "words"
           }') for animation type "${animationType}" in element:`,
-          textRef.current?.textContent?.substring(0, 50) + "..." // Log truncated text
+          textRef.current?.textContent?.substring(0, 50) + "..."
         );
         return; // Exit if no targets
       }
@@ -81,9 +101,9 @@ const TextAnimateOnScroll: React.FC<TextAnimateOnScrollProps> = ({
           tl.from(targets, {
             opacity: 0,
             yPercent: 100,
-            duration: customDuration ?? 0.5,
+            duration: customDuration ?? 1.1, // slower
             ease: "back.out(1.7)",
-            stagger: { amount: customStaggerAmount ?? 0.5 },
+            stagger: { amount: customStaggerAmount ?? 0.7 },
           });
           break;
 
@@ -93,9 +113,9 @@ const TextAnimateOnScroll: React.FC<TextAnimateOnScrollProps> = ({
           tl.from(targets, {
             rotationX: -90,
             opacity: 0,
-            duration: customDuration ?? 0.6,
+            duration: customDuration ?? 1.2, // slower
             ease: "power2.out",
-            stagger: { amount: customStaggerAmount ?? 0.6 },
+            stagger: { amount: customStaggerAmount ?? 0.8 },
           });
           break;
 
@@ -104,9 +124,9 @@ const TextAnimateOnScroll: React.FC<TextAnimateOnScrollProps> = ({
           tl.from(targets, {
             opacity: 0,
             x: "5em",
-            duration: customDuration ?? 0.6,
+            duration: customDuration ?? 1.1, // slower
             ease: "power2.out",
-            stagger: { amount: customStaggerAmount ?? 0.2 },
+            stagger: { amount: customStaggerAmount ?? 0.4 },
           });
           break;
 
@@ -114,47 +134,43 @@ const TextAnimateOnScroll: React.FC<TextAnimateOnScrollProps> = ({
         case "lettersSlideUp":
           tl = gsap.timeline({ paused: true });
           tl.from(targets, {
-            // targets should now be splitInstance.chars
             yPercent: 100,
             opacity: 0,
-            duration: customDuration ?? 0.2,
+            duration: customDuration ?? 0.5, // slower
             ease: "power1.out",
-            stagger: { amount: customStaggerAmount ?? 0.6 },
+            stagger: { amount: customStaggerAmount ?? 1.0 },
           });
           break;
 
         case "lettersSlideDown":
           tl = gsap.timeline({ paused: true });
           tl.from(targets, {
-            // targets should now be splitInstance.chars
             yPercent: -120,
             opacity: 0,
-            duration: customDuration ?? 0.3,
+            duration: customDuration ?? 0.7, // slower
             ease: "power1.out",
-            stagger: { amount: customStaggerAmount ?? 0.7 },
+            stagger: { amount: customStaggerAmount ?? 1.1 },
           });
           break;
 
         case "lettersFadeIn":
           tl = gsap.timeline({ paused: true });
           tl.from(targets, {
-            // targets should now be splitInstance.chars
             opacity: 0,
-            duration: customDuration ?? 0.2,
+            duration: customDuration ?? 0.5, // slower
             ease: "power1.out",
-            stagger: { amount: customStaggerAmount ?? 0.8 },
+            stagger: { amount: customStaggerAmount ?? 1.2 },
           });
           break;
 
         case "lettersFadeInRandom":
           tl = gsap.timeline({ paused: true });
           tl.from(targets, {
-            // targets should now be splitInstance.chars
             opacity: 0,
-            duration: customDuration ?? 0.05,
+            duration: customDuration ?? 0.15, // slower
             ease: "power1.out",
             stagger: {
-              amount: customStaggerAmount ?? 0.4,
+              amount: customStaggerAmount ?? 0.8,
               from: "random",
             },
           });
@@ -186,6 +202,78 @@ const TextAnimateOnScroll: React.FC<TextAnimateOnScrollProps> = ({
             },
           });
           return; // Exit switch for scrub
+
+        case "lineSlideUp":
+          tl = gsap.timeline({ paused: true });
+          targets.forEach((line: HTMLElement) => {
+            const envelope = document.createElement("span");
+            envelope.className = "block w-full overflow-hidden";
+            line.parentNode?.insertBefore(envelope, line);
+            envelope.appendChild(line);
+            line.classList.add("block", "w-full");
+          });
+          tl.from(targets, {
+            yPercent: 100,
+            opacity: 0,
+            duration: customDuration ?? 1.2, // slower
+            ease: "power2.out",
+            stagger: 0,
+          });
+          break;
+        case "lineSlideUpStagger":
+          tl = gsap.timeline({ paused: true });
+          targets.forEach((line: HTMLElement) => {
+            const envelope = document.createElement("span");
+            envelope.className = "block w-full overflow-hidden";
+            line.parentNode?.insertBefore(envelope, line);
+            envelope.appendChild(line);
+            line.classList.add("block", "w-full");
+          });
+          const lineDuration = customDuration ?? 1.2;
+          tl.from(targets, {
+            yPercent: 100,
+            opacity: 0,
+            duration: lineDuration,
+            ease: "power2.out",
+            stagger: customStaggerAmount ?? 0.18, // Overlap lines for a more fluid effect
+          });
+          break;
+
+        case "lineSlideDown":
+          tl = gsap.timeline({ paused: true });
+          targets.forEach((line: HTMLElement) => {
+            const envelope = document.createElement("span");
+            envelope.className = "block w-full overflow-hidden";
+            line.parentNode?.insertBefore(envelope, line);
+            envelope.appendChild(line);
+            line.classList.add("block", "w-full");
+          });
+          tl.from(targets, {
+            yPercent: -100,
+            opacity: 0,
+            duration: customDuration ?? 1.2,
+            ease: "power2.out",
+            stagger: 0,
+          });
+          break;
+        case "lineSlideDownStagger":
+          tl = gsap.timeline({ paused: true });
+          targets.forEach((line: HTMLElement) => {
+            const envelope = document.createElement("span");
+            envelope.className = "block w-full overflow-hidden";
+            line.parentNode?.insertBefore(envelope, line);
+            envelope.appendChild(line);
+            line.classList.add("block", "w-full");
+          });
+          const lineDownDuration = customDuration ?? 1.2;
+          tl.from(targets, {
+            yPercent: -100,
+            opacity: 0,
+            duration: lineDownDuration,
+            ease: "power2.out",
+            stagger: customStaggerAmount ?? 0.18,
+          });
+          break;
 
         default:
           console.warn("Unknown animation type:", animationType);
